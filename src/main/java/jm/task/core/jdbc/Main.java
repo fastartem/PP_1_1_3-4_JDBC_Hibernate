@@ -15,17 +15,12 @@ public class Main {
         UserService userService = new UserServiceImpl();
 
         userService.createUsersTable();
-
         userService.saveUser("Tom", "Spencer", (byte) 21);
         userService.saveUser("Jack", "Spencer", (byte) 22);
         userService.saveUser("Nick", "Spencer", (byte) 23);
         userService.saveUser("Sam", "Spencer", (byte) 24);
-
-        List<User> users = userService.getAllUsers();
-        users.forEach(System.out::println);
-
+        System.out.println(userService.getAllUsers());
         userService.cleanUsersTable();
-
         userService.dropUsersTable();
     }
 
