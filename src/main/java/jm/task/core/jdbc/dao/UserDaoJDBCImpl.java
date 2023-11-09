@@ -11,7 +11,7 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    Connection connection = Util.getConnection();
+    private final Connection connection = Util.getConnection();
 
     public UserDaoJDBCImpl() {
 
@@ -27,9 +27,8 @@ public class UserDaoJDBCImpl implements UserDao {
                     + "age TINYINT NOT NULL)";
 
             statement.executeUpdate(createTableQuery);
-            System.out.println("Таблица Users успешно создана или уже существует");
         } catch (SQLException e) {
-            System.err.println("Ошибка при создании таблицы Users: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -37,9 +36,8 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Statement statement = connection.createStatement()) {
             String dropTableQuery = "DROP TABLE IF EXISTS Users";
             statement.executeUpdate(dropTableQuery);
-            System.out.println("Таблица Users успешно удалена или не существует");
         } catch (SQLException e) {
-            System.err.println("Ошибка при удалении таблицы Users: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -50,9 +48,8 @@ public class UserDaoJDBCImpl implements UserDao {
             statement.setString(2, lastName);
             statement.setByte(3, age);
             statement.executeUpdate();
-            System.out.println("Пользователь успешно добавлен в таблицу User");
         } catch (SQLException e) {
-            System.err.println("Ошибка при добавлении пользователя: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -60,12 +57,8 @@ public class UserDaoJDBCImpl implements UserDao {
         String deleteQuery = "DELETE FROM users WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(deleteQuery);) {
             statement.setLong(1, id);
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Пользователь успешно удален");
-            } else {
-                System.out.println("Пользователь с указанным идентификатором не найден");
-            }
+            statement.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -86,7 +79,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 users.add(user);
             }
         } catch (SQLException e) {
-            System.err.println("Ошибка при получении списка пользователей: " + e.getMessage());
+            e.printStackTrace();
         }
         return users;
     }
@@ -95,9 +88,8 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Statement statement = connection.createStatement()) {
             String cleanTableQuery = "TRUNCATE TABLE Users";
             statement.executeUpdate(cleanTableQuery);
-            System.out.println("Таблица Users успешно очищена");
         } catch (SQLException e) {
-            System.err.println("Ошибка при очистке таблицы Users: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
