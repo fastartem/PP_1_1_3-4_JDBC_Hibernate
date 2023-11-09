@@ -20,8 +20,8 @@ public class Main {
         userService.saveUser("Nick", "Spencer", (byte) 23);
         userService.saveUser("Sam", "Spencer", (byte) 24);
         System.out.println(userService.getAllUsers());
-        userService.cleanUsersTable();
-        userService.dropUsersTable();
+       // userService.cleanUsersTable();
+       // userService.dropUsersTable();
     }
 
 }
