@@ -4,15 +4,18 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+    private final SessionFactory sessionFactory = Util.getSessionFactory();
+
     public UserDaoHibernateImpl() {
 
     }
-
 
     @Override
     public void createUsersTable() {
@@ -26,46 +29,51 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        SessionFactory sessionFactory = Util.getSessionFactory();
+        Transaction tx = null;
         try (Session session = sessionFactory.openSession()) {
             User user = new User(name, lastName, age);
-            session.beginTransaction();
+            tx = session.beginTransaction();
             session.saveOrUpdate(user);
             session.getTransaction().commit();
-            System.out.println("Пользователь успешно добавлен в таблицу User");
         } catch (Exception e) {
-            System.err.println("Ошибка при добавлении пользователя: " + e.getMessage());
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
         }
     }
 
     @Override
     public void removeUserById(long id) {
-        SessionFactory sessionFactory = Util.getSessionFactory();
+        Transaction tx = null;
         try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
+            tx = session.beginTransaction();
             User user = session.get(User.class, id);
             if (user != null) {
                 session.delete(user);
                 session.getTransaction().commit();
-                System.out.println("Пользователь успешно удален");
-            } else {
-                System.out.println("Пользователь с указанным идентификатором не найден");
             }
         } catch (Exception e) {
-            System.err.println("Ошибка при удалении пользователя: " + e.getMessage());
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
         }
     }
 
     @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        SessionFactory sessionFactory = Util.getSessionFactory();
+        Transaction tx = null;
         try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
+            tx = session.beginTransaction();
             users = session.createQuery("FROM User").getResultList();
             session.getTransaction().commit();
         } catch (Exception e) {
-            System.err.println("Ошибка при получении списка пользователей: " + e.getMessage());
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
         }
 
         return users;
@@ -73,14 +81,16 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void cleanUsersTable() {
-        SessionFactory sessionFactory = Util.getSessionFactory();
+        Transaction tx = null;
         try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
+            tx = session.beginTransaction();
             session.createQuery("DELETE FROM User").executeUpdate();
             session.getTransaction().commit();
-            System.out.println("Таблица Users успешно очищена");
         } catch (Exception e) {
-            System.err.println("Ошибка при очистке таблицы Users: " + e.getMessage());
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
         }
     }
 }
