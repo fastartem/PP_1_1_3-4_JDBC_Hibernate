@@ -58,7 +58,6 @@ public class UserDaoJDBCImpl implements UserDao {
         try (PreparedStatement statement = connection.prepareStatement(deleteQuery);) {
             statement.setLong(1, id);
             statement.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
