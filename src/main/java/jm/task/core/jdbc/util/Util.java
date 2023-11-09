@@ -20,7 +20,6 @@ public class Util {
     static {
         try {
             connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-            e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
